@@ -2,13 +2,33 @@
 const loading = document.getElementById("loading");
 const tableHead = document.getElementById("table-head");
 const tableBody = document.getElementById("table-body");
+const paginationControls = document.getElementById("pagination-controls");
+const prevPage = document.getElementById("prev-page");
+const nextPage = document.getElementById("next-page");
 
 document.getElementById("file").addEventListener("change", handleFileChange);
 //document.getElementById('btnSearch').addEventListener('click', handleSearch);
 
-//variables for storing sheet data and headers
 let sheet_data = [];
 let headers = [];
+let currentPageRows = [];
+const pageSize = 10;
+let pageNumber = 1;
+let startRow;
+let totalPages;
+
+nextPage.addEventListener("click", () => {
+    pageNumber++;
+    currentPageRows = paginateTable(sheet_data.slice(1));
+    populateTable(currentPageRows, headers);
+});
+
+prevPage.addEventListener("click", () => {
+    pageNumber--;
+    currentPageRows = paginateTable(sheet_data.slice(1));
+    populateTable(currentPageRows, headers);
+});
+
 
 /** Check if the selected file is an excel file
  * Read the file as an array buffer.
@@ -18,14 +38,10 @@ function handleFileChange(event) {
     if (!file || !(file.name.endsWith('.xls') || file.name.endsWith('.xlsx'))) {
         return toastr.error("Please select an Excel file (xls or xlsx).");
     }
-    toastr.warning(`Be patient while the upload is in progress.`);
 
-    // Use setTimeout to ensure the UI updates before processing the file
-    setTimeout(() => {
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onload = processFile;
-    }, 500);  // Execute after the current call stack is cleared
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onload = processFile;
 }
 
 //process the uploaded file
@@ -46,11 +62,27 @@ function processFile(event) {
 
         headers = sheet_data[0].map(header => header.toUpperCase());
 
-        populateTable(sheet_data.slice(1), headers);
+        currentPageRows = paginateTable(sheet_data.slice(1), headers);
+        populateTable(currentPageRows, headers);
     } catch (error) {
         console.log(error);
         toastr.error(error.message);
     }
+}
+
+function paginateTable(body) {
+    const totalRows = body.length;
+    totalPages = Math.ceil(totalRows / pageSize);
+    (pageNumber === 1) ? toastr.info(`Hi, your excel will be displayed in ${totalPages} pages :)`) : "";
+
+    prevPage.disabled = pageNumber === 1;
+    nextPage.disabled = pageNumber === totalPages;
+
+    startRow = (pageNumber - 1) * pageSize + 1;
+    const endRow = Math.min(startRow + pageSize, totalRows);
+    const currentPageRows = body.slice(startRow, endRow);
+
+    return currentPageRows;
 }
 
 /** Clear the current table body
@@ -84,7 +116,7 @@ function populateTable(body, headers) {
         <td class='${cellStyle}'>
             <input type='checkbox' class='row-checkbox'>
         </td>
-        <td class='${cellStyle} bg-gray-50 sticky left-0'>${index + 1}</td>`;
+        <td class='${cellStyle} bg-gray-50 sticky left-0'>${index + startRow}</td>`;
 
         row.forEach((rowElement) => {
             tableBodyRow += `<td class='${cellStyle} whitespace-nowrap max-w-[50ch] truncate hover:whitespace-normal'>${rowElement}</td>`;
@@ -93,6 +125,7 @@ function populateTable(body, headers) {
     });
     tableBody.innerHTML = tableBodyRow;
     document.getElementById("check-all").addEventListener("change", toggleAllCheckboxes);
+    paginationControls.style.display = (tableBody.rows.length === 0) ? "none" : "block";
 }
 
 function toggleAllCheckboxes() {
