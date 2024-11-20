@@ -1,0 +1,26 @@
+﻿
+<div class="p-6 bg-gray-50 min-h-screen flex flex-col items-center">
+    <!-- Upload Section -->
+    <div class="flex items-center space-x-4 mb-6">
+        <label id="file-upload-label" for="file" class="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition">
+            Upload
+        </label>
+        <input id="file" type="file" class="hidden" />
+    </div>
+
+    <!-- Table Section -->
+    <div class="w-full overflow-x-auto bg-white rounded-lg shadow-md max-h-screen hide-scrollbar">
+        <table class="table-auto w-full text-sm text-left border-collapse border border-gray-200">
+            <thead id="table-head" class="bg-gray-100 text-gray-600 uppercase font-semibold text-xs">
+            </thead>
+            <tbody id="table-body" class="text-gray-800">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/lib/sheetjs/xlsx.full.min.js"></script>
+    <script src="~/js/excel.to.html.converter.js"></script>
+}   
