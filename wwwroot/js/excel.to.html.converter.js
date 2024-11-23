@@ -1,21 +1,32 @@
-﻿
-const loading = document.getElementById("loading");
+﻿const fileUploadLabel = document.getElementById("file-upload-label");
+const file = document.getElementById("file");
+const pageSizeElt = document.getElementById("page-size");
 const tableHead = document.getElementById("table-head");
 const tableBody = document.getElementById("table-body");
 const paginationControls = document.getElementById("pagination-controls");
+const pageNumberElt = document.getElementById("page-number");
 const prevPage = document.getElementById("prev-page");
 const nextPage = document.getElementById("next-page");
 
 document.getElementById("file").addEventListener("change", handleFileChange);
 //document.getElementById('btnSearch').addEventListener('click', handleSearch);
 
-let sheet_data = [];
-let headers = [];
-let currentPageRows = [];
-const pageSize = 10;
-let pageNumber = 1;
-let startRow;
-let totalPages;
+let sheet_data = [],
+    headers = [],
+    currentPageRows = [],
+    pageSize,
+    pageNumber = 1,
+    startRow,
+    totalPages;
+
+pageSizeElt.addEventListener("change", () => {
+    pageSize = Number(pageSizeElt.value);
+});
+
+fileUploadLabel.addEventListener("click", () => {
+    file.disabled = !pageSize || pageSize === "";
+    if (!pageSize || pageSize === "") return toastr.error("Select a page size :/)");
+});
 
 nextPage.addEventListener("click", () => {
     pageNumber++;
@@ -29,15 +40,13 @@ prevPage.addEventListener("click", () => {
     populateTable(currentPageRows, headers);
 });
 
-
 /** Check if the selected file is an excel file
  * Read the file as an array buffer.
  */
 function handleFileChange(event) {
     const file = event.target.files[0];
-    if (!file || !(file.name.endsWith('.xls') || file.name.endsWith('.xlsx'))) {
+    if (!file || !(file.name.endsWith('.xls') || file.name.endsWith('.xlsx')))
         return toastr.error("Please select an Excel file (xls or xlsx).");
-    }
 
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
@@ -52,9 +61,13 @@ function processFile(event) {
 
     try {
         const data = new Uint8Array(event.target.result);
-        const workbook = XLSX.read(data, { type: "array", cellDates: true });
+        const workbook = XLSX.read(data, {type: "array", cellDates: true});
 
-        sheet_data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1, raw: true, defval: "" });
+        sheet_data = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {
+            header: 1,
+            raw: true,
+            defval: ""
+        });
 
         if (sheet_data.length === 0 || sheet_data[0].length === 0) {
             throw new Error("The Excel file is empty or the first row is empty.");
@@ -71,6 +84,7 @@ function processFile(event) {
 }
 
 function paginateTable(body) {
+    pageNumberElt.textContent = pageNumber;
     const totalRows = body.length;
     totalPages = Math.ceil(totalRows / pageSize);
     (pageNumber === 1) ? toastr.info(`Hi, your excel will be displayed in ${totalPages} pages :)`) : "";

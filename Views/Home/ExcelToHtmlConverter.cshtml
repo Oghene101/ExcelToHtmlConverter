@@ -1,11 +1,20 @@
-﻿
-<div class="p-6 bg-gray-50 min-h-screen flex flex-col items-center">
+﻿<div class="p-6 bg-gray-50 min-h-screen flex flex-col items-center">
     <!-- Upload Section -->
     <div class="flex items-center space-x-4 mb-6">
-        <label id="file-upload-label" for="file" class="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition">
+        <select id="page-size"
+                class="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200">
+            <option value="" selected disabled>Select a page size.</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+
+        <label id="file-upload-label" for="file"
+               class="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition">
             Upload
         </label>
-        <input id="file" type="file" class="hidden" />
+        <input id="file" type="file" class="hidden"/>
     </div>
 
     <!-- Table Section -->
@@ -20,8 +29,15 @@
 
     <!-- Pagination Controls -->
     <div id="pagination-controls" class="flex justify-center space-x-2 mt-4 hidden">
-        <button id="prev-page" class="px-4 py-2 bg-transparent text-black border rounded-md focus:ring focus:ring-blue-200" disabled>Previous</button>
-        <button id="next-page" class="px-4 py-2 bg-transparent text-black border rounded-md focus:ring focus:ring-blue-200" disabled>Next</button>
+        <button id="prev-page"
+                class="px-4 py-2 bg-transparent text-black border rounded-md focus:ring focus:ring-blue-200" disabled>
+            Previous
+        </button>
+        <span id="page-number"></span>
+        <button id="next-page"
+                class="px-4 py-2 bg-transparent text-black border rounded-md focus:ring focus:ring-blue-200" disabled>
+            Next
+        </button>
     </div>
 </div>
 
