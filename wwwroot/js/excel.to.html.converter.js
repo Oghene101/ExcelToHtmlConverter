@@ -75,7 +75,7 @@ function processFile(event) {
 
         headers = sheet_data[0].map(header => header.toUpperCase());
 
-        currentPageRows = paginateTable(sheet_data.slice(1), headers);
+        currentPageRows = paginateTable(sheet_data.slice(1));
         populateTable(currentPageRows, headers);
     } catch (error) {
         console.log(error);
@@ -148,7 +148,6 @@ function toggleAllCheckboxes() {
         checkbox.checked = isChecked;
     });
 }
-
 function handleSearch() {
     const searchWord = document.getElementById("txtSearchword").value.toLowerCase();
     const tableRows = document.querySelectorAll('#dtAddressManagement tbody tr');
